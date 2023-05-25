@@ -1,26 +1,28 @@
 {
-  "name": "js-22",
+  "name": "11_01_http_query",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "parcel src/*.html",
-    "build": "parcel build src/*.html"
+    "start": "parcel src/index.html",
+    "dev": "parcel src/index.html",
+    "build": "parcel build src/index.html"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/luxplanjay/js-22.git"
+    "url": "git+https://github.com/KozhaVitalii/11_01_http_query.git"
   },
   "keywords": [],
-  "author": "Alexander Repeta <alexander.repeta@gmail.com>",
+  "author": "Vitalii Kozha <kozhavitaliy@gmail.com>",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/luxplanjay/js-22/issues"
+    "url": "https://github.com/KozhaVitalii/11_01_http_query/issues"
   },
-  "homepage": "https://github.com/luxplanjay/js-22#readme",
+  "homepage": "https://github.com/KozhaVitalii/11_01_http_query#readme",
   "devDependencies": {
-    "parcel-bundler": "^1.8.1",
-    "parcel-plugin-handlebars-precompile": "^0.2.0",
+    "parcel-bundler": "^1.12.4",
+    "parcel-plugin-handlebars-precompile": "^1.0.2",
     "parcel-plugin-nuke-dist": "^1.0.1"
-  }
+  },
+  "dependencies": {}
 }
