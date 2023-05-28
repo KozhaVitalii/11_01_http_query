@@ -13,14 +13,355 @@
  * - https://pokeapi.co/
  */
 
+// import '../css/common.css';
+// import pokemonCardTpl from '../templates/pokemon-card.hbs'; // добавляем темплейты для карты покемона (который мы
+// создали в файле pokemon-card.hbs)
+
+// Первый способ: fetch ожидает передачи URL (адрес куда делать запросы). По умолчанию метод fetch использует GET запрос
+
+// const r = fetch('https://pokeapi.co/api/v2/pokemon/2'); // такой запрос возвращает промис, а это значит что мы можем к нему
+// // прицепить наши then и catch, чтобы получить результат или обработать ошибку
+// console.log(r); // видем что возвращается промис, поэтому поработаем с этим промисом:
+
+// fetch('https://pokeapi.co/api/v2/pokemon/2').then(data => {
+//   console.log(data);
+// })
+// мы видим что такой запрос успешно выполнился, но тот массив объектов который теперь передается, это ещё не данные (точнее)
+// в body есть некий ReadableStream, который необходимо раскодировать чтобы получить данные. Для того чтобы его раскодировать
+// у нашего Response на прототипе есть три метода: text(этот метод мы будем вызывать только тогда, когда мы будем получать не
+// json а буквально текст, допустим CSV файл с табличными данными), json (основной тип 99% случаев это получение данных в
+// виде строки), blob(передача видео, аудио файлов и картинок).
+
+// Пока поработаем с json:
+// Только теперь будем назівать не некой data, а так принято называть response
+
+// fetch('https://pokeapi.co/api/v2/pokemon/2').then(response => {
+//   console.log(response.json()); // в результате наш json() вернет ещё один промис, поэтому мы его return-ним в следующий then:
+//   return response.json();
+// }).then(pokemon => {
+//   console.log(pokemon); // а на втором then мы уже возвращаем нашего покемона
+// })
+
+
+// fetch('https://pokeapi.co/api/v2/pokemon/2').then(response => {
+//   return response.json(); // в результате наш json() вернет ещё один промис, поэтому мы его return-ним в следующий then:
+// }).then(pokemon => {
+//   console.log(pokemon); // а на втором then мы уже возвращаем нашего покемона
+// }).catch(error => {
+//   console.log(error);
+// })
+
+// Пошагово это так: 1. Сделай запрос сюда: fetch('https://pokeapi.co/api/v2/pokemon/2'), 2. когда придет ответ распарси
+// сюда: .then(response => { return response.json() }); 3. и когда наш ответ обработан в п.2 если успешно, то выполни
+// 3. .then(pokemon => {console.log(pokemon);}), если неудачный ответ, то выполни 4. .catch(error => {console.log(error);})
+
+// В консоле на вкладке разработчика => Network => Fetch / XHR => Headers and Preview - есть вся информация о результате запроса
+// на сервер и превью полученного результата (т.е. в коде все выводить через console.log() нет необходимости)
+
+// Если сделаем такой запрос https://pokeapi.co/api/v2/pokemon, то мы получим всех покемонов, которые есть:
+
+// fetch('https://pokeapi.co/api/v2/pokemon').then(response => {
+//   return response.json(); // в результате наш json() вернет ещё один промис, поэтому мы его return-ним в следующий then:
+// }).then(pokemon => {
+//   console.log(pokemon); // а на втором then мы уже возвращаем нашего покемона
+// }).catch(error => {
+//   console.log(error);
+// })
+
+// Теперь попрактикуем: отправим запрос на сервер, получим нашего покемона и далее зарендерим в разметке его крточку со
+// всей информацией о покемоне.
+// Верстальщик нам сделал такой шаблон разметки:
+
+// */
+// {/* <div class="card">
+//   <div class="card-img-top"> // это карточка покемона
+//     <img src="" alt=""> // сюда подставить картинку и имя
+//   </div>
+//   <div class="card-body">
+//     <h2 class="card-title">Имя: </h2> // сюда подставить его имя
+//     <p class="card-text">Вес: </p> // сюда подставить его вес
+//     <p class="card-text">Рост: </p> // сюда подставить его рос
+
+//     // А в этой разметке зарендерить его умения:
+//     <p class="card-text"><b>Умения</b></p>
+//     <ul class="list-group"></ul>
+//       <li class="list-group-item"></li>
+//     </ul>
+//   </div>
+// </div> */}
+// */
+
+// Ок поехали: идём в превью и смотрим на массив объекта и берем нужные ключи для подстановки в нашу разметку прям на
+// HTML странице. Для того чтобы добавить способности покемона (которые перечисленые во вложенном объекте), мы переберем его
+//   * /
+//   < p class="card-text" > <b>Умения</b></p >
+//     <ul class="list-group"></ul>
+//     {{#each abilities}}
+//       <li class="list-group-item">{{ability.name}}</li>
+//     {{/each}}
+// */
+
+// В данной разметке, each является частью шаблонного движка или библиотеки для работы с шаблонами, такой как Handlebars.js
+// или Mustache.js.Он используется для выполнения итераций или перебора элементов в массиве или объекте abilities и генерации
+// оответствующего HTML - кода для каждого элемента.
+
+// Конкретно в данном примере, each выполняет итерацию по массиву abilities и для каждого элемента создает новый < li > элемент
+// списка, содержащий имя способности(ability.name).Таким образом, для каждой способности в массиве abilities будет создан
+// отдельный элемент списка в HTML - коде.
+
+
+// Шаблонные движки или библиотеки для работы с шаблонами представляют собой инструменты, которые позволяют разработчикам
+// генерировать динамический HTML - код, объединяя данные и шаблоны.Они предоставляют синтаксис и функции, которые упрощают
+// создание и обновление HTML - кода на основе данных.
+
+// Принцип работы шаблонных движков состоит в том, что разработчики создают шаблон, который содержит статическую разметку HTML
+// с местозаполнителями или переменными, в которые будут подставляться реальные данные.Затем, используя шаблонный движок, они
+// передают данные в шаблон и получают в результате сгенерированный HTML - код, в котором значения переменных заменены на
+// соответствующие данные.
+
+// Handlebars.js является одним из популярных шаблонных движков JavaScript.Он предоставляет простой и интуитивно понятный
+// синтаксис для создания шаблонов и подстановки данных.Handlebars.js поддерживает различные функции, такие как условные
+// операторы, циклы и обработка массивов данных.
+
+// Пример использования Handlebars.js можно видеть в вашем предыдущем вопросе, где { { #each abilities } } указывает начало
+// итерации по массиву abilities, а { { ability.name } } представляет переменную, в которую будет подставлено имя каждой
+// способности.Handlebars.js выполнит итерацию по массиву и сгенерирует HTML - код с соответствующими данными.
+
+// Далее через импорт подключили темплейт карты покемона и:
+
+// fetch('https://pokeapi.co/api/v2/pokemon/2').then(response => {
+//   return response.json();
+// }).then(pokemon => {
+//   console.log(pokemon);
+//   const markup = pokemonCardTpl(pokemon); // мы получили от серевера нашего покемона по id, далее подставляем данные нашего
+//   // покемона в нашу разметку
+//   console.log(markup); // на выходе получаем готовую разметку
+// }).catch(error => {
+//   console.log(error);
+// })
+
+// По поводу файла который мы импортировали как pokemonCardTpl с расширением.hbs(та разметка которую мы создали с подстановкой
+// данных пришедших из бекенда):
+
+// Расширение файла ".hbs" обычно указывает на то, что файл является шаблоном, который использует синтаксис и функциональность
+// Handlebars.js или другого шаблонного движка, совместимого с Handlebars.
+// Handlebars использует расширение файла ".hbs" для идентификации шаблонов, чтобы разработчики могли легко определить, что файл
+// содержит код шаблона, который нужно обрабатывать с использованием Handlebars.js.
+// Когда файл имеет расширение ".hbs", разработчик может предположить, что он содержит шаблон, который будет использоваться для
+// генерации HTML - кода или другого формата на основе данных и логики, определенной в шаблоне.Обычно такие файлы.hbs могут
+// содержать смесь статического HTML - кода и специальных конструкций Handlebars.js для вставки переменных, выполнения итераций,
+//   условных операторов и других функций шаблонизации.
+
+// Теперь добавим нау разметку в наш контейнер, для этого настроим ссылку:
+
+// const refs = {
+//   cardContainer: document.querySelector('.js-card-container')
+// }
+
+// fetchPokemonById(); // вызываем нашу функцию (теперь она переиспользуемая)
+
+// Данные полученные из бекенда и шаблон разметки есть только внутри нашего колбека then(pokemon => { }), поэтому и
+// связь с нашей разметкой(той куда необходимо поместить нашу карточку (шаблон, который мы создали)), тоже вставляем в колбек
+
+// fetch('https://pokeapi.co/api/v2/pokemon/2').then(response => {
+//   return response.json();
+// }).then(pokemon => {
+//   console.log(pokemon);
+//   const markup = pokemonCardTpl(pokemon); // мы получили от серевера нашего покемона по id, далее подставляем данные нашего
+//   // покемона в нашу разметку
+//   console.log(markup); // на выходе получаем готовую разметку
+//   refs.cardContainer.innerHTML = markup; // вставляем наш шаблон разметки с данными о покемоне (из бекенда), в наш основной HTML файл
+// }).catch(error => {
+//   console.log(error);
+// })
+
+// Это и называется AJAX - ассинхронный JS и XML, когда мы с клиента делаем запрос на бекенд, он возвращает json, а мы уже на
+// клиенте по этим данным рендерим разметку (как в нашем примере через библиотеку Handlebars.js)
+
+// Тот код который мы описали выше, считается мусоркой, теперь перепишем это в чистый код. Для этого:
+// 1. Рисование интерфейса должно быть вынесено в отдельную функцию:
+
+// function renderPokemonCard(pokemon) {
+//   const markup = pokemonCardTpl(pokemon);
+//   console.log(markup);
+//   refs.cardContainer.innerHTML = markup;
+// }
+
+// в итоге:
+
+// fetch('https://pokeapi.co/api/v2/pokemon/2').then(response => {
+//   return response.json();
+// }).then(renderPokemonCard) // (это аналог then(pokemon => renderPokemonCard(pokemon)), но в самой нашей функции уже есть
+// // ссылка на renderPokemonCard(pokemon)
+//   .catch(error => {
+//   console.log(error);
+// })
+
+// Все ещё плохо, потому что наш fetch стоит как мусорка в коде, потому что он не переиспользуем, поэтому вынесем в отдельную
+// функцию
+
+// function fetchPokemonById() {
+//   // выносим нашу функцию fetch сюда:
+// fetch('https://pokeapi.co/api/v2/pokemon/2').then(response => {
+//   return response.json();
+// }).then(renderPokemonCard)
+//   .catch(error => {
+//   console.log(error);
+// })
+// }
+
+// .then(renderPokemonCard) // такая запись является ссылкой на функцию, которая может быть вызвана когда-нибудь потом
+// .then(renderPokemonCard()) // такая запись вызывает функцию мгновенно
+// В нашем примере мы передаем именно ссылку на функцию
+
+// В нашем коде все ещё мысорка т.к.функция которая забирает данные и функция которая рисует данные они по хорошему друг
+// про друга ничего знать не должны, это значит что должно быть вот так:
+
+// по сути наша функция должна только забрать данные и вернут из себя промис return fetch().
+// В итоге: сейчас она пошла получила данные, распарсила их и вернула промис:
+// function fetchPokemonById() {
+//   return fetch('https://pokeapi.co/api/v2/pokemon/2')
+//     .then(response => {
+//   return response.json();
+// })
+// }
+
+// и уже при её вызове можно прицепить then и в этот then передать функцию renderPokemonCard(pokemon), ну и прицепить
+// cаtch чтобы обработать ошибку:
+
+// fetchPokemonById()
+//   .then(renderPokemonCard)
+//   .catch(error => console.log(error))
+
+// В результате мы добились того, что одна функция фетчит, вторая рендерит, а третья обрабатывает ошибку (пока не описывали)
+// 1.
+// function fetchPokemonById() {
+//   return fetch('https://pokeapi.co/api/v2/pokemon/2')
+//     .then(response => {
+//   return response.json();
+// })
+// }
+// 2.
+// function renderPokemonCard(pokemon) {
+//   const markup = pokemonCardTpl(pokemon);
+//   console.log(markup);
+//   refs.cardContainer.innerHTML = markup;
+// }
+
+// Ещё раз детально разберем части нашей функции fetchPokemonById:
+// 1. return fetch('https://pokeapi.co/api/v2/pokemon/2') // этот код возвращает промис
+// 2. .then(response => { return response.json(); }) // на место этого кода возвращается промис значением
+// которого будет response.json(), т.е. распарсенные данные
+// и если этому всему мы прицепим ещё один then мы получим уже нашего покемона .then(pokemon =>)
+
+// В итоге return промис.промис(response.json()).then(pokemon =>) // это уже будет объект с данными о нашем покемоне
+// И тогда когда мы делаем такую запись fetchPokemonById().then(renderPokemonCard), мы говорим: возьми данные из объекта
+// про нашего покемона fetchPokemonById() и используй их в разметке которую мы описали в функции renderPokemonCard(),
+// т.е. только те данные из объекта, на которые мы ссылаемся в нашей разметке.
+
+// Ок, теперь начнем настраивать нашу функцию, т.е. подставлять динамически id покемонов:
+
+// fetchPokemonById(10) // подставляем при вызове функции номер id и получаем карточки с разными покемонами
+//   .then(renderPokemonCard)
+//   .catch(error => console.log(error))
+
+// function fetchPokemonById(pokemonId) {
+//   return fetch(`https://pokeapi.co/api/v2/pokemon/${pokemonId}`) // будем передавать id покемона
+//     .then(response => {
+//   return response.json();
+// })
+// }
+
+// function renderPokemonCard(pokemon) {
+//   const markup = pokemonCardTpl(pokemon);
+//   console.log(markup);
+//   refs.cardContainer.innerHTML = markup;
+// }
+
+// Ок теперь у нас переиспользуемая функция, мы умеем генерить карточку для любого покемона из нашего бекенда.Теперь добавим
+// функционал позволяющий работать с формой, которая есть в нашей разметке(где мы можем указать номер id) и отправить по кнопке
+// запрос:
+// */
+//     <form class="form-inline search-form js-search-form">
+//       <div class="form-group">
+//         <input type="text" class="form-control" name="query" /> // сюда вводим айдишник
+//       </div>
+
+//       <button type="submit" class="btn btn-primary">Искать</button> // а здесь при клике на кнопку шел запрос на сервер
+//     </form>
+// */
+
+// Расширяем наши ссылки, добавим ссылку на форму:
+
+// const refs = {
+//   cardContainer: document.querySelector('.js-card-container'),
+//   searchForm: document.querySelector('.js-search-form')
+// }
+
+// Вешаем слушатель событий на кнопку:
+
+// refs.searchForm.addEventListener('submit', onSearch);
+
+// function onSearch(e) {
+//   e.preventDefault(); // чтобы форма не перегружалась при отправке формы
+ 
+//   // чтобы динамически получать id необходимо взять значение инпута с атрибутом name="query". Чтобы получить ссылку на
+//   // наш элемент у которого есть name=""
+//   const form = e.currentTarget; // получаем доступ к форме на которой ловим клик
+//   const searchQuery = form.elements.query.value; // и уже на нашей форме (form) добираемся до всех её элементов
+//   // (.elements), находим єлемент с свойством .query (т.е. это name="" нашего инпута) и у него уже получаем его значение (.value)
+
+//   // и теперь поместим значение полученное из инпута searchQuery как аргумент нашей функции перед этим поместим нашу основную
+//   // функцию в onSearch, для того чтобы вся наша магия выполнялась при сабмите формы:
+//   fetchPokemonById(searchQuery)
+//     .then(renderPokemonCard)
+//     .catch(onFetchError) // теперь обработка ошибки
+//     .finally(() => form.reset()); // в .finally мы говорим в любом случае по результату отработки функции, возьми нашу форму и сделай ей ресет.
+// }
+
+// function fetchPokemonById(pokemonId) {
+//   const url = `https://pokeapi.co/api/v2/pokemon/${pokemonId}`;
+//   return fetch(url)
+//     .then(response => response.json());
+// }
+
+// function renderPokemonCard(pokemon) {
+//   const markup = pokemonCardTpl(pokemon);
+//   console.log(markup);
+//   refs.cardContainer.innerHTML = markup;
+// }
+
+// function onFetchError(error) {
+//   alert('Упс, что-то пошло не так и мы не нашли вашего покемона');
+// }
+
+// Ок, готово.Теперь опишем то какая логика структурирования файлов будет на реальных проектах.То как будет распределен код
+// по файлам:
+
+// 1. Выносим нашу функцию связи с сервером в отдельный файл: api-ServiceWorker.js
+// function fetchPokemonById(pokemonId) {
+//   const url = `https://pokeapi.co/api/v2/pokemon/${pokemonId}`;
+//   return fetch(url)
+//     .then(response => response.json());
+// }
+
+// поле чего импортируем её сюда import API from './api-service';
+
+// 2. Далее выносм все наши ссылки в отдельный файл get-refs.js
+// после чего импортируем их в этот файл import getRefs from './get-refs';
+
+
+
+// оригинал кода:
+
 import '../css/common.css';
-import pokemonCardTpl from '../templates/pokemon-card.hbs';
-import API from './api-service';
-import getRefs from './get-refs';
+import pokemonCardTpl from '../templates/pokemon-card.hbs'; // работа с шаблоном разметки для карточки покемона
+import API from './api-service'; // работа с бекендом
+import getRefs from './get-refs'; // работа с ссылками на разметку
 
-const refs = getRefs();
+const refs = getRefs(); // получаем доступ к ссылкам на нашу разметку 
 
-refs.searchForm.addEventListener('submit', onSearch);
+refs.searchForm.addEventListener('submit', onSearch); // вешаем слушатель событий на форму и обработчик
 
 function onSearch(e) {
   e.preventDefault();
@@ -28,30 +369,68 @@ function onSearch(e) {
   const form = e.currentTarget;
   const searchQuery = form.elements.query.value;
 
+// получяем данные из бекенда, рендерим карточку для покемона и вставляем в нашу разметку  
   API.fetchPokemon(searchQuery)
     .then(renderPokemonCard)
     .catch(onFetchError)
     .finally(() => form.reset());
 }
 
+// рендерим разметку в нашем основном HTML файле
 function renderPokemonCard(pokemon) {
   const markup = pokemonCardTpl(pokemon);
   refs.cardContainer.innerHTML = markup;
 }
 
+// обрабатываем ошибку
 function onFetchError(error) {
   alert('Упс, что-то пошло не так и мы не нашли вашего покемона!');
 }
 
-// =========================================
+// // =========================================
 
-const url = 'https://newsapi.org/v2/everything?q=cars';
-const options = {
-  headers: {
-    Authorization: '4330ebfabc654a6992c2aa792f3173a3',
-  },
-};
+// pokemon?limit=100&offset=200 // эта часть называется параметрами запроса
 
-fetch(url, options)
-  .then(r => r.json())
-  .then(console.log);
+// К примеру:
+// mysite.com/api/pocemon?имя=значение&имя=значение
+// имя = значение - имя параметра и его значение, это дополнительные настройки нашего запроса, каждая пара доп.параметров
+// разделяется &. Их может не быть вообще либо безчисленное множетсво в зависимости от того что нам надо получить от бекенда.
+// Параметры:
+// limit - позволяют забрать первое n-е кол-во элементов(покемонов)
+// offset=200
+
+// К примеру:
+
+// fetch('https://pokeapi.co/api/v2/pokemon?limit=10').then(r => r.json()).then(console.log);
+// в консоли на вкладке network мы можем увидеть результат запроса на сервер без параметра лимит и с ним.Т.е.он регулирует
+// сколько мы хотим забрать объектов в нашем запросе.
+
+// const url = 'https://newsapi.org/v2/everything?q=cars';
+// const options = {
+//   headers: {
+//     Authorization: '4330ebfabc654a6992c2aa792f3173a3',
+//   },
+// };
+
+// fetch(url, options)
+//   .then(r => r.json())
+//   .then(console.log);
+
+
+// Кросс-доменные запросы (смотри детально лекцию начиная с 1:55:00)
+
+// Есть ошибки кросс - доменного запроса, которые из фронтенда их не победить.
+// Отдавать в браузер инфо или нет решается только на стороне сервера(бекенда), к которому мы обращаемся,
+//   если на бекенде настроен CORS как "*" т.е.всем разрешаю, то мы получим инфо себе на сайт со стороннего сервера, в
+//  противном случае будет ошибка. Настраивается CORS только на стороне бекенда.
+
+// CORS (cross-origin Resource Sharing) - это один из механизмов от атак на сервер!
+
+// Все полезные серверы расчитаны на то, что к ним будут обращаться с другого бекенда, а не с браузера напрямую. Все это
+// связано с безопасностью и хранением ключей и секретов.
+// Если запрос идёт с бекенда (а не с браузера) на какой то полезный бекенд, то такого понятия как CORS уже не существует.
+
+// Так работает отлично:
+// Клиент (веб сайт) <-> Прокси сервер (наш бекенд) <-> Сервер API (сервер с данными типа погоды) <-> база данных (сервера)
+
+// К большинcтву серверов необходимы какие то секреты или ключи
